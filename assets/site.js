@@ -45,6 +45,7 @@
     subarreglos: "subarreglos",
     "two-sum": "Two Sum",
     inversiones: "inversiones",
+    voraces: "algoritmos voraces",
   };
 
   const normalizeTopic = (topic) => topicLabels[topic] || topic.replaceAll("-", " ");
