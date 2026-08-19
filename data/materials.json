@@ -646,6 +646,36 @@
       "variant": "pauta",
       "contains_solutions": true,
       "publication_status": "published"
+    },
+    {
+      "id": "algoritmos-2026-2-ayudantia-07-grafos",
+      "title": "Ayudantía 07: grafos (BFS, DFS y Dijkstra)",
+      "course": "ECIN-608",
+      "course_slug": "algoritmos",
+      "term": "2026-2",
+      "category": "guias",
+      "type": "ayudantia",
+      "topics": ["grafos", "bfs", "dfs", "dijkstra"],
+      "format": "pdf",
+      "path": "algoritmos/2026-2/guias/algoritmos-2026-2-ayudantia-07-grafos-enunciado.pdf",
+      "variant": "student",
+      "contains_solutions": "False",
+      "publication_status": "published"
+    },
+    {
+      "id": "algoritmos-2026-2-ayudantia-07-grafos-pauta",
+      "title": "Ayudantía 07: grafos (BFS, DFS y Dijkstra)",
+      "course": "ECIN-608",
+      "course_slug": "algoritmos",
+      "term": "2026-2",
+      "category": "guias",
+      "type": "ayudantia",
+      "topics": ["grafos", "bfs", "dfs", "dijkstra"],
+      "format": "pdf",
+      "path": "algoritmos/2026-2/guias/algoritmos-2026-2-ayudantia-07-grafos-pauta.pdf",
+      "variant": "pauta",
+      "contains_solutions": "True",
+      "publication_status": "published"
     }
   ]
 }
