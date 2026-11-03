@@ -1,0 +1,303 @@
+\documentclass[11pt]{article}
+
+% ==== Idioma y codificación ====
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% ==== Márgenes y formato básico ====
+\usepackage[a4paper,margin=1in]{geometry}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+% ==== Matemáticas ====
+\usepackage{amsmath, amssymb}
+
+% ==== Listas ====
+\usepackage{enumitem}
+\setlist[itemize]{left=1.4em}
+\setlist[enumerate]{left=1.6em,labelsep=0.5em}
+
+% ==== Tablas ====
+\usepackage{array}
+\usepackage{booktabs}
+
+% ==== Hipervínculos ====
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=false,
+  pdfborder={0 0 0},
+  pdftitle={Hashing: División, Encadenamiento, Hashing Universal y Sondeo Lineal; KMP, Depuración y LPS (P\#T)},
+  pdfauthor={},
+  pdfsubject={Curso Diseño y Análisis de Algoritmos}
+}
+
+% ==== Encabezados y pies de página ====
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % limpia
+\lhead{\coursecode}
+\chead{\lecturetitle}
+\rhead{\term}
+\cfoot{\thepage}
+
+% ==== Pseudocódigo (sin float) ====
+\usepackage[noend]{algpseudocode}
+\algrenewcommand\alglinenumber[1]{{#1}\hspace*{0.6em}}
+\algrenewcommand\algorithmicdo{}
+\algrenewcommand\algorithmicthen{}
+
+% ---- Metadatos de la clase (edita estos) ----
+\newcommand{\coursecode}{ECIN-608}
+\newcommand{\coursetitle}{Diseño y Análisis de Algoritmos}
+\newcommand{\term}{2do Semestre, 2026}
+\newcommand{\lecturenumber}{4}
+\newcommand{\lecturetitle}{Hashing y Búsqueda de Patrones (KMP)}
+\newcommand{\instructor}{Ayud. Ferran Rojas Andreu}
+
+% ==== Comandos útiles ====
+\newcommand{\bigO}{\mathcal{O}}
+
+% ==== Inicio del documento ====
+\begin{document}
+
+% ---- Cabecera ----
+\begin{center}
+  {\Large \textbf{\coursetitle}}\\[0.25em]
+  {\large \textbf{Ayudantía \lecturenumber: \lecturetitle}}\\[0.25em]
+  {\small \instructor}
+\end{center}
+
+% ================== ENUNCIADO 1 ==================
+\section*{Enunciado 1: Hashing --- división, encadenamiento, sondeo lineal y hashing universal}
+
+Considere el conjunto de claves
+\[
+A=[22,\ 12,\ 14,\ 5,\ 20,\ 7], \qquad n=6,
+\]
+que se insertan \emph{en el orden dado} en una tabla de tamaño \(m=7\), con índices \(0,\dots,6\). En todas las partes se usa el mismo conjunto \(A\) para poder comparar los métodos.
+
+\subsection*{(A) División y encadenamiento}
+
+Use
+\[
+h(k)=k\bmod 7
+\]
+y resuelva las colisiones por encadenamiento, insertando siempre al inicio de la lista.
+
+\begin{enumerate}[label=(\alph*),itemsep=0.25em]
+\item Complete el arreglo de valores hash:
+\[
+\begin{array}{c|cccccc}
+k & 22 & 12 & 14 & 5 & 20 & 7\\ \hline
+h(k) & & & & & &
+\end{array}
+\]
+\item Inserte todas las claves y dibuje la tabla final. Indique las cadenas y calcule \(\alpha\).
+\item Busque \(12\), \(22\) y \(7\). ¿Cuántas comparaciones hace en cada caso?
+\item Busque \(13\). ¿Dónde termina la búsqueda?
+\item En la cadena \(T[0]=[14,7,0]\), elimine \(14\) (cabeza), \(7\) (medio) y \(0\) (cola). Explique cómo cambian los punteros.
+\item ¿Qué ocurre si se inserta \(22\) otra vez? ¿Y si \(m=1\)?
+\item ¿Qué pasa si \(n>m\)? ¿Qué costo tiene una búsqueda en el peor caso?
+\item ¿Qué cambia si las listas se mantienen ordenadas?
+\end{enumerate}
+
+\subsection*{(B) División y direccionamiento abierto (sondeo lineal)}
+
+Use la misma \(h(k)=k\bmod 7\) y resuelva las colisiones por sondeo lineal:
+\[
+\text{slot}=(h(k)+j)\bmod 7,\qquad j=0,1,2,\dots
+\]
+Cada casilla puede estar \textsc{Empty}, ocupada o \textsc{Deleted}.
+
+\begin{enumerate}[label=(\alph*),itemsep=0.25em]
+\item Complete el arreglo de secuencias de sondeo:
+\[
+\begin{array}{c|cccccc}
+k & 22 & 12 & 14 & 5 & 20 & 7\\ \hline
+\text{sondeos} & & & & & &
+\end{array}
+\]
+\item Dibuje el estado final de la tabla e indique qué clave queda en cada índice.
+\item Calcule \(\alpha\). ¿Por qué el sondeo lineal produce agrupamiento primario?
+\item Busque \(20\) y \(13\). ¿Cuántos sondeos necesita cada búsqueda?
+\item Elimine \(22\). ¿Qué valor deja en la casilla? Busque \(7\) después de la eliminación y explique por qué no se puede usar \textsc{Empty}.
+\item Inserte \(8\) después de eliminar \(22\). ¿Puede reutilizar la casilla? ¿Qué debe verificar antes?
+\item ¿Qué ocurre si la tabla se llena? ¿Y si \(\alpha\) es alto o hay muchos \textsc{Deleted}?
+\item ¿Qué hace el algoritmo si se intenta insertar \(22\) otra vez?
+\end{enumerate}
+
+\subsection*{(C) Hashing universal y encadenamiento}
+
+Use la familia
+\[
+h_{a,b}(k)=\big((ak+b)\bmod p\big)\bmod m,
+\]
+con
+\[
+p=29,\qquad m=7,\qquad a=3,\qquad b=4,
+\]
+y resuelva las colisiones por encadenamiento, insertando al inicio.
+
+\begin{enumerate}[label=(\alph*),itemsep=0.25em]
+\item Complete el arreglo:
+\[
+\begin{array}{c|cccccc}
+k & 22 & 12 & 14 & 5 & 20 & 7\\ \hline
+ak+b & & & & & & \\
+(ak+b)\bmod 29 & & & & & & \\
+h_{a,b}(k) & & & & & &
+\end{array}
+\]
+\item Dibuje las cadenas resultantes y calcule \(\alpha\).
+\item Busque \(22\) y \(7\). Elimine \(5\). ¿Cuántas comparaciones cuesta cada operación?
+\item Demuestre que para \(x\neq y\),
+\[
+\Pr[h_{a,b}(x)=h_{a,b}(y)]\le \frac1m
+\]
+cuando \(a,b\) se eligen uniformemente.
+\item ¿Qué pasa si \(a=0\)? ¿Y si \(p\) no es primo? ¿Y si \(p\le\max A\)?
+\item ¿Por qué elegir \(a,b\) al azar o mantenerlos secretos protege contra un adversario?
+\end{enumerate}
+
+\subsection*{(D) Comparación}
+
+Para cada método, indique un escenario en el que sea la mejor elección y otro en el que sea una mala elección. ¿Cuándo usaría encadenamiento en vez de sondeo lineal? ¿Cuándo usaría hashing universal?
+
+\clearpage
+
+% ================== ENUNCIADO 2 ==================
+\section*{Enunciado 2: KMP y función prefijo (CLRS)}
+
+Dado un texto \(T[1..n]\) y un patrón \(P[1..m]\), se desea encontrar todas las ocurrencias de \(P\) en \(T\) usando el algoritmo \emph{Knuth--Morris--Pratt} (KMP). Para ello se usa la \textbf{función prefijo} \(\pi[1..m]\) (también llamada \emph{LPS}, por ``longest proper prefix which is also suffix''):
+\[
+\pi[q] \;=\; \max\{k < q : P[1..k] \text{ es sufijo de } P[1..q]\}.
+\]
+
+Las siguientes son las versiones del libro de \emph{CLRS }:
+
+\noindent\textsc{Compute-Prefix-Function}$(P,\,m)$
+\begin{algorithmic}[1]
+\State $k \gets 0$
+\State $\pi[1] \gets 0$
+\For{$q = 2$ \textbf{to} $m$}
+  \While{$k > 0$ \textbf{and} $P[k+1] \neq P[q]$}
+    \State $k \gets \pi[k]$
+  \EndWhile
+  \If{$P[k+1] = P[q]$}
+    \State $k \gets k + 1$
+  \EndIf
+  \State $\pi[q] \gets k$
+\EndFor
+\State \Return $\pi$
+\end{algorithmic}
+
+\noindent\textsc{KMP-Matcher}$(T,\,P,\,n,\,m)$
+\begin{algorithmic}[1]
+\State $\pi \gets \textsc{Compute-Prefix-Function}(P,\,m)$
+\State $q \gets 0$
+\For{$i = 1$ \textbf{to} $n$}
+  \While{$q > 0$ \textbf{and} $P[q+1] \neq T[i]$}
+    \State $q \gets \pi[q]$
+  \EndWhile
+  \If{$P[q+1] = T[i]$}
+    \State $q \gets q + 1$
+  \EndIf
+  \If{$q = m$}
+    \State \textbf{print} ``Pattern occurs with shift'' $i - m$
+    \State $q \gets \pi[q]$
+  \EndIf
+\EndFor
+\end{algorithmic}
+
+Considere el patrón
+\[
+P \;=\; \text{\texttt{ababaca}}
+\]
+y el texto
+\[
+T \;=\; \text{\texttt{abababacaba}}.
+\]
+
+Determine:
+\begin{enumerate}[label=(\alph*),itemsep=0.25em]
+  \item el valor de la función prefijo \(\pi\) (LPS) de \(P\), mostrando la evolución de \(k\) y de \(\pi[q]\) en cada paso del algoritmo \textsc{Compute-Prefix-Function};
+  \item la ejecución completa de \textsc{KMP-Matcher} sobre \(T\), mostrando el valor de \(q\) en cada posición \(i\) del texto e indicando el o los desplazamientos (\emph{shifts}) donde ocurre \(P\) en \(T\);
+  \item el costo temporal de \textsc{Compute-Prefix-Function} y de \textsc{KMP-Matcher}, justificando brevemente por qué el costo total es \(O(n+m)\).
+\end{enumerate}
+
+\clearpage
+
+% ================== ENUNCIADO 3 ==================
+\section*{Enunciado 3: Depuración (debug) de LPS y KMP}
+
+Un estudiante implementó \textsc{Compute-Prefix-Function} y \textsc{KMP-Matcher} y obtuvo los rastreos (\emph{traces}) de la evolución de las variables que se muestran abajo. Cada rastreo contiene \textbf{exactamente dos} valores incorrectos. Su tarea es \emph{depurarlos}.
+
+Considere el patrón \(P=\texttt{ababaca}\) y el texto \(T=\texttt{abababacaba}\) del enunciado anterior, con las versiones de CLRS del pseudocódigo.
+
+\textbf{(a) Rastreo del estudiante de \textsc{Compute-Prefix-Function}:}
+\[
+\begin{array}{c|c|c|c}
+q & k \text{ al inicio} & \text{evolución de } k & \pi[q] \text{ reportado}\\\hline
+2 & 0 & P[1]{=}a \neq P[2]{=}b & 0\\
+3 & 0 & P[1]{=}a = P[3]{=}a \Rightarrow k=1 & 1\\
+4 & 1 & P[2]{=}b = P[4]{=}b \Rightarrow k=2 & 1\\
+5 & 1 & P[2]{=}b \neq P[5]{=}a;\ k=\pi[1]=0;\ P[1]{=}a = P[5]{=}a \Rightarrow k=1 & 1\\
+6 & 1 & P[2]{=}b \neq P[6]{=}c;\ k=\pi[1]=0;\ P[1]{=}a \neq P[6]{=}c & 0\\
+7 & 0 & P[1]{=}a = P[7]{=}a \Rightarrow k=1 & 1
+\end{array}
+\]
+
+\textbf{(b) Rastreo del estudiante de \textsc{KMP-Matcher}}\\
+(con la función prefijo correcta \(\pi=\langle0,0,1,2,3,0,1\rangle\)):
+\[
+\begin{array}{c|c|c|c}
+i & T[i] & \text{acción} & q \text{ final reportado}\\\hline
+1 & a & P[1]{=}a = T[1] \Rightarrow q=1 & 1\\
+2 & b & P[2]{=}b = T[2] \Rightarrow q=2 & 2\\
+3 & a & P[3]{=}a = T[3] \Rightarrow q=3 & 3\\
+4 & b & P[4]{=}b = T[4] \Rightarrow q=4 & 4\\
+5 & a & P[5]{=}a = T[5] \Rightarrow q=5 & 5\\
+6 & b & P[6]{=}c \neq T[6];\ q=\pi[5]=3;\ P[4]{=}b = T[6] \Rightarrow q=4 & 3\\
+7 & a & P[5]{=}a = T[7] \Rightarrow q=5 & 5\\
+8 & c & P[6]{=}c = T[8] \Rightarrow q=6 & 6\\
+9 & a & P[7]{=}a = T[9] \Rightarrow q=7=m;\ \text{imprime shift } 2;\ q=\pi[7]=1 & 7\\
+10 & b & P[2]{=}b = T[10] \Rightarrow q=2 & 2\\
+11 & a & P[3]{=}a = T[11] \Rightarrow q=3 & 3
+\end{array}
+\]
+
+Determine:
+\begin{enumerate}[label=(\alph*),itemsep=0.25em]
+  \item en el rastreo (a), cuáles son los dos valores de \(\pi[q]\) incorrectos, cuál es la \emph{causa raíz} (qué línea del pseudocódigo se aplicó mal o se omitió, y en qué iteración \(q\)), y escriba la función prefijo correcta;
+  \item en el rastreo (b), cuáles son los dos valores de \(q\) incorrectos, qué línea de \textsc{KMP-Matcher} se violó en cada caso, y escriba la secuencia correcta de \(q\) junto con el desplazamiento correcto;
+  \item explique brevemente (2--3 líneas) por qué el error del rastreo (b) en \(i=9\) es peligroso: ¿qué pasaría en \(i=10\) si se dejara \(q=7\) sin reiniciar?
+\end{enumerate}
+
+\clearpage
+
+% ================== ENUNCIADO 4 ==================
+\section*{Enunciado 4: LPS del string $P\#T$}
+
+Una técnica clásica (relacionada con la función Z y con el \emph{string matching} por prefijos) consiste en \emph{concatenar} el patrón y el texto separados por un carácter centinela \(\#\) que no aparece en \(P\):
+\[
+S \;=\; P\;\#\;T,
+\]
+y computar la función prefijo \(\pi\) (LPS) sobre el string completo \(S\) con \textsc{Compute-Prefix-Function}. La idea es que \(\pi[q]\) indica el largo del prefijo de \(P\) que coincide con el sufijo de \(S[1..q]\); por lo tanto, cada posición \(q\) de la zona del texto con \(\pi[q] = m\) (donde \(m=|P|\)) marca una ocurrencia de \(P\) que \emph{termina} en esa posición de \(S\).
+
+Considere el patrón y el texto de los enunciados anteriores:
+\[
+P \;=\; \texttt{ababaca}, \qquad T \;=\; \texttt{abababacaba}.
+\]
+
+Determine:
+\begin{enumerate}[label=(\alph*),itemsep=0.25em]
+  \item construya el string \(S = P\#T\) y calcule la función prefijo \(\pi\) de \emph{todo} \(S\) (posición por posición), mostrando la evolución de \(k\) y de \(\pi[q]\). Observe que las primeras \(m\) entradas coinciden con el LPS de \(P\) del Enunciado 2;
+  \item identifique todas las posiciones \(q\) de la zona del texto con \(\pi[q] = m\). Para cada una, convierta el índice \(q\) de \(S\) en el índice de inicio de la ocurrencia en \(T\) y en el \emph{shift}, y compare el resultado con el del Enunciado 2;
+  \item explique por qué el carácter \(\#\) es necesario: ¿qué ocurriría si se computara \(\pi\) sobre \(P T\) (sin el \(\#\))? Justifique además que \(\pi[q]\le m\) para todo \(q\) en la zona del texto, y analice el costo temporal del método.
+\end{enumerate}
+
+\textit{Sugerencia:} en \(S=P\#T\) el centinela \(\#\) está en la posición \(m+1\); el carácter \(T[i]\) de la posición \(i\) del texto ocupa la posición \(m+1+i\) de \(S\).
+
+\end{document}
